@@ -6,7 +6,7 @@
 #    By: mapoirie <mapoirie@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/09/22 12:37:15 by mapoirie          #+#    #+#              #
-#    Updated: 2023/09/29 13:59:07 by mapoirie         ###   ########.fr        #
+#    Updated: 2023/10/03 11:00:04 by mapoirie         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,6 +19,8 @@ RM = rm -fr
 SRC = philo.c\
 philo_utils.c\
 thread.c\
+routine.c\
+time.c\
 free.c
 
 OBJ = $(SRC:.c=.o)
