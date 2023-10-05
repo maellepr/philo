@@ -6,13 +6,13 @@
 /*   By: mapoirie <mapoirie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/22 15:20:58 by mapoirie          #+#    #+#             */
-/*   Updated: 2023/10/03 17:24:00 by mapoirie         ###   ########.fr       */
+/*   Updated: 2023/10/05 14:25:15 by mapoirie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	ft_atoi(const char *str)
+int	ft_atoi(const char *str)//mettre en long
 {
 	int	i;
 	int	nb;

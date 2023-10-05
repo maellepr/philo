@@ -6,7 +6,7 @@
 /*   By: mapoirie <mapoirie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 13:55:01 by mapoirie          #+#    #+#             */
-/*   Updated: 2023/10/04 15:04:31 by mapoirie         ###   ########.fr       */
+/*   Updated: 2023/10/05 14:45:27 by mapoirie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void	free_all(t_program *table)
 		i++;
 	}
 	free(table->philo);
-	free(table->lock_write);
+	// free(table->lock_write);
 	free(table->locks_spoon);
 	free(table);
 }
@@ -33,7 +33,9 @@ void	destroy_all_mutex(t_program *table)
 	int	i;
 
 	i = 0;
-	pthread_mutex_destroy(table->lock_write);
+	pthread_mutex_destroy(&table->lock_write);
+	pthread_mutex_destroy(&table->lock_flag);
+	pthread_mutex_destroy(&table->lock_meal);
 	while (i < table->nb_p)
 	{
 		pthread_mutex_destroy(&table->locks_spoon[i]);

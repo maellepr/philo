@@ -6,7 +6,7 @@
 /*   By: mapoirie <mapoirie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 18:01:24 by mapoirie          #+#    #+#             */
-/*   Updated: 2023/10/04 15:33:56 by mapoirie         ###   ########.fr       */
+/*   Updated: 2023/10/05 17:44:57 by mapoirie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,10 +33,15 @@ typedef struct	s_program
 
 	long int		t_start;//temps ou le programme commence
 
-
-	pthread_mutex_t	*lock_write;
+	int				flag_stop;
+	
+	pthread_mutex_t	lock_write;
+	pthread_mutex_t	lock_flag;
+	pthread_mutex_t	lock_meal;
 	pthread_mutex_t	*locks_spoon;
-	pthread_mutex_t *lock_n_eat;
+
+	// pthread_mutex_t lock_n_eat;
+
 
 	t_philo			**philo;//tableau avec tous les philo
 	
@@ -51,14 +56,13 @@ typedef struct s_philo
 
 //propre a chaque philo :
 
-	long int		t_beg_lastm;//temps debut de son dernier repas
-	long int		t_end_lastm;//temps fin de son dernier repas
 	long int		t_beg_meal;//temps debut de son dernier repas
-
-	long int		t_beg_lasttest;
-	long int		t_end_lasttest;
+	// long int		t_end_lastm;//temps fin de son dernier repas
+	// long int		t_beg_meal;//temps debut de son dernier repas
 
 	long int		nb_eat_each;
+
+
 
 	t_program		*table;
 }	t_philo;
@@ -78,6 +82,9 @@ int			main(int ac, char **av);
 int			ft_atoi(const char *str);
 
 /*------------------------- thread.c ------------------------*/
+int			time_die_reach(t_program *table);
+int			check_conditions(t_program *table);
+int			join_destroy_threads(t_program *table);
 int			make_threads(t_program *table);
 
 /*------------------------- routine.c ------------------------*/
@@ -87,6 +94,7 @@ void		*routine(void *arg);
 /*-------------------------- time.c --------------------------*/
 long int	get_ms_time();
 long int	time_since_beg(t_philo *philo);
+int			check_flag(t_philo *philo);
 int			duration(t_philo *philo, long int time);
 /*-------------------------- free.c --------------------------*/
 void		free_all(t_program *table);

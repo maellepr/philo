@@ -6,7 +6,7 @@
 /*   By: mapoirie <mapoirie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 18:01:08 by mapoirie          #+#    #+#             */
-/*   Updated: 2023/10/04 15:04:56 by mapoirie         ###   ########.fr       */
+/*   Updated: 2023/10/05 17:26:05 by mapoirie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ void	print_struct(t_program *table)
 
 void	assign_spoon(t_program *table, t_philo **philo, int i)
 {
-	if (philo[i]->id % 2 == 0)
+	if (i % 2 == 0)
 	{
 		philo[i]->spoon[0] = i;
 		if (i == 0)
@@ -61,16 +61,16 @@ void	assign_spoon(t_program *table, t_philo **philo, int i)
 		else
 			philo[i]->spoon[1] = i - 1;
 	}
-	else if (philo[i]->id % 2 != 0)
+	else if (i % 2 != 0)
 	{
-		if (i == 0)
-			philo[i]->spoon[0] = table->nb_p - 1;
-		else
-			philo[i]->spoon[0] = i - 1;
-		philo[i]->spoon[1] = i;		
+		// if (i == 0)
+		// 	philo[i]->spoon[0] = table->nb_p - 1;
+		// else
+		philo[i]->spoon[0] = i - 1;
+		philo[i]->spoon[1] = i;
 	}
-	// printf("philo->spoon[%d][0] = %d\n", i, philo[i]->spoon[0]);
-	// printf("philo->spoon[%d][1] = %d\n\n", i, philo[i]->spoon[1]);
+	printf("philo->spoon[%d][0] = %d\n", i, philo[i]->spoon[0]);
+	printf("philo->spoon[%d][1] = %d\n\n", i, philo[i]->spoon[1]);
 	return ;
 }
 
@@ -96,14 +96,14 @@ t_philo	**init_philo(t_program *table)
 		if (!philo[i])
 			return (NULL);
 		philo[i]->id = i;
-
+		printf("philo id = %d\n", i);
 		// philo[i]->locks_spoon = malloc(sizeof(pthread_mutex_t));// pas sur
 		// if (!philo[i]->locks_spoon)
 		// 	return(NULL);
 		philo[i]->table = table;		
 		assign_spoon(table, philo, i);
 
-		philo[i]->t_beg_lastm = 0;
+		philo[i]->t_beg_meal = get_ms_time();
 		philo[i]->nb_eat_each = 0;
 		i++;
 	}
@@ -144,9 +144,12 @@ t_program	*init_table(int ac, char **av)
 	else if (ac == 6)
 		table->nb_eat = ft_atoi(av[5]);
 	table->t_start = get_ms_time();
+	table->flag_stop = 1;//-1 la simulation s'arrete //1 elle continue
 	// print_struct(philo);
-	table->lock_write = malloc(sizeof(pthread_mutex_t));// ajouter protec
-	pthread_mutex_init(table->lock_write, NULL);
+	// table->lock_write = malloc(sizeof(pthread_mutex_t));// ajouter protec
+	pthread_mutex_init(&table->lock_write, NULL);
+	pthread_mutex_init(&table->lock_flag, NULL);
+	pthread_mutex_init(&table->lock_meal, NULL);
 	table->locks_spoon = init_spoon_locks(table); 
 	table->philo = init_philo(table);
 	if (check_nb_time(table) == - 1 || table->philo == NULL)
@@ -162,6 +165,8 @@ void	philo(int ac, char **av)
 	if (!table)
 		return;
 	make_threads(table);
+	if (check_conditions(table) == -1)
+		join_destroy_threads(table);
 }
 
 int	main(int ac, char **av)
