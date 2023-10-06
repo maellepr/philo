@@ -6,7 +6,7 @@
 /*   By: mapoirie <mapoirie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 18:01:08 by mapoirie          #+#    #+#             */
-/*   Updated: 2023/10/05 17:26:05 by mapoirie         ###   ########.fr       */
+/*   Updated: 2023/10/06 13:44:35 by mapoirie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,40 +69,30 @@ void	assign_spoon(t_program *table, t_philo **philo, int i)
 		philo[i]->spoon[0] = i - 1;
 		philo[i]->spoon[1] = i;
 	}
-	printf("philo->spoon[%d][0] = %d\n", i, philo[i]->spoon[0]);
-	printf("philo->spoon[%d][1] = %d\n\n", i, philo[i]->spoon[1]);
+	// printf("philo->spoon[%d][0] = %d\n", i, philo[i]->spoon[0]);
+	// printf("philo->spoon[%d][1] = %d\n\n", i, philo[i]->spoon[1]);
 	return ;
 }
 
 
 t_philo	**init_philo(t_program *table)
 {
-	// philo->thread = calloc(philo->nb_p, sizeof(pthread_t));// a changer par ft_calloc
-	// // philo->thread = malloc(sizeof(pthread_t) * (philo->nb_p));//p etre a remplir de null
-	// if (!philo->thread)
-	// 	return (-1);//erreur quitter programme
-	// philo->i_thread = 0;
 	int	i;
-
 	t_philo	**philo;
-	
+
+	i = 0;	
 	philo = malloc(sizeof(t_philo) * table->nb_p);
 	if (!philo)
 		return(NULL);
-	i = 0;
 	while(i < table->nb_p)
 	{
 		philo[i] = malloc(sizeof(t_philo) * 1);
 		if (!philo[i])
 			return (NULL);
 		philo[i]->id = i;
-		printf("philo id = %d\n", i);
-		// philo[i]->locks_spoon = malloc(sizeof(pthread_mutex_t));// pas sur
-		// if (!philo[i]->locks_spoon)
-		// 	return(NULL);
+		// printf("philo id = %d\n", i);
 		philo[i]->table = table;		
 		assign_spoon(table, philo, i);
-
 		philo[i]->t_beg_meal = get_ms_time();
 		philo[i]->nb_eat_each = 0;
 		i++;
@@ -145,11 +135,13 @@ t_program	*init_table(int ac, char **av)
 		table->nb_eat = ft_atoi(av[5]);
 	table->t_start = get_ms_time();
 	table->flag_stop = 1;//-1 la simulation s'arrete //1 elle continue
+	table->flag_eat = 0;
 	// print_struct(philo);
 	// table->lock_write = malloc(sizeof(pthread_mutex_t));// ajouter protec
 	pthread_mutex_init(&table->lock_write, NULL);
 	pthread_mutex_init(&table->lock_flag, NULL);
 	pthread_mutex_init(&table->lock_meal, NULL);
+	pthread_mutex_init(&table->lock_nb_eat, NULL);
 	table->locks_spoon = init_spoon_locks(table); 
 	table->philo = init_philo(table);
 	if (check_nb_time(table) == - 1 || table->philo == NULL)
@@ -167,6 +159,8 @@ void	philo(int ac, char **av)
 	make_threads(table);
 	if (check_conditions(table) == -1)
 		join_destroy_threads(table);
+	destroy_all_mutex(table);
+	free_all(table);
 }
 
 int	main(int ac, char **av)

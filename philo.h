@@ -6,7 +6,7 @@
 /*   By: mapoirie <mapoirie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 18:01:24 by mapoirie          #+#    #+#             */
-/*   Updated: 2023/10/05 17:44:57 by mapoirie         ###   ########.fr       */
+/*   Updated: 2023/10/06 12:44:32 by mapoirie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,11 +34,13 @@ typedef struct	s_program
 	long int		t_start;//temps ou le programme commence
 
 	int				flag_stop;
-	
+	int				flag_eat;
+
 	pthread_mutex_t	lock_write;
 	pthread_mutex_t	lock_flag;
 	pthread_mutex_t	lock_meal;
 	pthread_mutex_t	*locks_spoon;
+	pthread_mutex_t	lock_nb_eat;
 
 	// pthread_mutex_t lock_n_eat;
 
@@ -88,14 +90,14 @@ int			join_destroy_threads(t_program *table);
 int			make_threads(t_program *table);
 
 /*------------------------- routine.c ------------------------*/
-int			spoon_eat_routine(void *philo);
+int			spoon_eat_routine(void *info);
 void		*routine(void *arg);
 
 /*-------------------------- time.c --------------------------*/
 long int	get_ms_time();
 long int	time_since_beg(t_philo *philo);
 int			check_flag(t_philo *philo);
-int			duration(t_philo *philo, long int time);
+int			duration(t_philo *philo, long int time, int x);
 /*-------------------------- free.c --------------------------*/
 void		free_all(t_program *table);
 void		destroy_all_mutex(t_program *table);
