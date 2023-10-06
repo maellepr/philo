@@ -6,7 +6,7 @@
 /*   By: mapoirie <mapoirie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 18:01:08 by mapoirie          #+#    #+#             */
-/*   Updated: 2023/10/06 13:44:35 by mapoirie         ###   ########.fr       */
+/*   Updated: 2023/10/06 14:37:20 by mapoirie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,7 +157,7 @@ void	philo(int ac, char **av)
 	if (!table)
 		return;
 	make_threads(table);
-	if (check_conditions(table) == -1)
+	if (check_conditions(table) == -1 || table->nb_p == 1)
 		join_destroy_threads(table);
 	destroy_all_mutex(table);
 	free_all(table);

@@ -6,7 +6,7 @@
 /*   By: mapoirie <mapoirie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/25 15:11:50 by mapoirie          #+#    #+#             */
-/*   Updated: 2023/10/06 14:17:40 by mapoirie         ###   ########.fr       */
+/*   Updated: 2023/10/06 14:59:04 by mapoirie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ int	time_die_reach(t_program *table)
 		{
 			// printf("philo[%d] i = %d %ld - %ld\n", table->philo[i]->id, i, get_ms_time(), table->philo[i]->t_beg_meal);
 			pthread_mutex_lock(&table->lock_write);
-			printf("%ld %d died\n", time_since_beg(table->philo[i]), i);
+			printf("%ld %d died\n", time_since_beg(table->philo[i]), i + 1);
 			pthread_mutex_unlock(&table->lock_write);
 			pthread_mutex_unlock(&table->lock_meal);
 			pthread_mutex_lock(&table->lock_flag);
