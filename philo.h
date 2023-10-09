@@ -6,7 +6,7 @@
 /*   By: mapoirie <mapoirie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 18:01:24 by mapoirie          #+#    #+#             */
-/*   Updated: 2023/10/09 18:00:02 by mapoirie         ###   ########.fr       */
+/*   Updated: 2023/10/06 12:44:32 by mapoirie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,72 +22,83 @@
 
 typedef struct s_philo	t_philo;
 
-typedef struct s_program
+typedef struct	s_program
 {
-	int				nb_p;
-	long int		d_die;
-	long int		d_eat;
-	long int		d_sleep;
-	long int		nb_eat;
-	long int		t_start;
+	int				nb_p;// max 200
+
+	long int		d_die;//duree qu'un philo meurt sil ne mange pas	min 60ms
+	long int		d_eat;//duree que prend un philo pour manger
+	long int		d_sleep;//duree que prend un philo pour dormir
+	long int		nb_eat;//nombre de fois un philo doit manger avant fin
+
+	long int		t_start;//temps ou le programme commence
+
 	int				flag_stop;
 	int				flag_eat;
+
 	pthread_mutex_t	lock_write;
 	pthread_mutex_t	lock_flag;
 	pthread_mutex_t	lock_meal;
 	pthread_mutex_t	*locks_spoon;
 	pthread_mutex_t	lock_nb_eat;
-	t_philo			**philo;
+
+	// pthread_mutex_t lock_n_eat;
+
+
+	t_philo			**philo;//tableau avec tous les philo
+	
 }	t_program;
 
 typedef struct s_philo
 {
 	pthread_t		thread;
 	int				id;
+
 	int				spoon[2];
-	long int		t_beg_meal;
+
+//propre a chaque philo :
+
+	long int		t_beg_meal;//temps debut de son dernier repas
+	// long int		t_end_lastm;//temps fin de son dernier repas
+	// long int		t_beg_meal;//temps debut de son dernier repas
+
 	long int		nb_eat_each;
+
+
+
 	t_program		*table;
 }	t_philo;
 
+
+
 /*------------------------- philo.c -------------------------*/
+int			check_param(char **av);
+int			check_nb_time(t_program *table);
+void		print_struct(t_program *table);
 t_philo		**init_philo(t_program *table);
-int			init_mutex(t_program *table);
-int			init_nb_pre_atoi(t_program *table, int ac, char **av);
 t_program	*init_table(int ac, char **av);
+void		philo(int ac, char **av);
 int			main(int ac, char **av);
 
 /*---------------------- philo_utils.c ----------------------*/
 int			ft_atoi(const char *str);
-int			check_param(char **av);
-void		assign_spoon(t_program *table, t_philo **philo, int i);
 
 /*------------------------- thread.c ------------------------*/
-int			each_eat_enought(t_program *table);
 int			time_die_reach(t_program *table);
 int			check_conditions(t_program *table);
 int			join_destroy_threads(t_program *table);
 int			make_threads(t_program *table);
 
 /*------------------------- routine.c ------------------------*/
-void		routine_alone(void *info);
-int			sleep_routine(void *info);
-int			think_routine(void *info);
+int			spoon_eat_routine(void *info);
 void		*routine(void *arg);
 
-/*------------------------- eat_routine.c ------------------------*/
-int			take_fork_1(t_philo *philo);
-int			take_fork_2(t_philo *philo);
-int			is_eating(t_philo *philo);
-int			spoon_eat_routine(void *info);
-
 /*-------------------------- time.c --------------------------*/
-long int	get_ms_time(void);
+long int	get_ms_time();
 long int	time_since_beg(t_philo *philo);
 int			check_flag(t_philo *philo);
 int			duration(t_philo *philo, long int time, int x);
-
 /*-------------------------- free.c --------------------------*/
-void		free_all(t_program *table, int x);
+void		free_all(t_program *table);
 void		destroy_all_mutex(t_program *table);
 #endif
