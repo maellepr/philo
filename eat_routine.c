@@ -6,7 +6,7 @@
 /*   By: mapoirie <mapoirie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/09 15:28:38 by mapoirie          #+#    #+#             */
-/*   Updated: 2023/10/09 17:04:35 by mapoirie         ###   ########.fr       */
+/*   Updated: 2023/10/09 18:28:35 by mapoirie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ int	take_fork_1(t_philo *philo)
 	pthread_mutex_lock(&philo->table->lock_write);
 	if (check_flag(philo) != -1)
 		printf("%ld %d has taken a fork\n", \
-		time_since_beg(philo), philo->id + 1);
+time_since_beg(philo), philo->id + 1);
 	else if (check_flag(philo) == -1)
 	{
 		pthread_mutex_unlock(&philo->table->lock_write);
@@ -34,7 +34,10 @@ int	take_fork_1(t_philo *philo)
 int	take_fork_2(t_philo *philo)
 {
 	if (check_flag(philo) == -1)
+	{
+		pthread_mutex_unlock(&philo->table->locks_spoon[philo->spoon[0]]);
 		return (-1);
+	}
 	pthread_mutex_lock(&philo->table->locks_spoon[philo->spoon[1]]);
 	pthread_mutex_lock(&philo->table->lock_write);
 	if (check_flag(philo) != -1)
