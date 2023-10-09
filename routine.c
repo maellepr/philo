@@ -6,7 +6,7 @@
 /*   By: mapoirie <mapoirie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 10:09:50 by mapoirie          #+#    #+#             */
-/*   Updated: 2023/10/06 14:58:47 by mapoirie         ###   ########.fr       */
+/*   Updated: 2023/10/09 11:50:48 by mapoirie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,16 +49,30 @@ int	sleep_routine(void *info)
 
 int	think_routine(void *info)
 {
-	t_philo	*philo;
+	long int	time_to_think;
+	t_philo		*philo;
 
 	philo = info;
 	if (check_flag(philo) == -1)
 		return (-1);
-	
+	if (philo->table->nb_p % 2 == 0)
+	{
+		// pthread_mutex_lock(&philo->table->lock_meal);
+		time_to_think = philo->table->d_eat - philo->table->d_sleep;
+		// pthread_mutex_unlock(&philo->table->lock_meal);
+	}
+	if (philo->table->nb_p % 2 != 0)
+	{
+		// pthread_mutex_lock(&philo->table->lock_meal);
+		time_to_think = philo->table->d_eat * 2 - philo->table->d_sleep;
+		// pthread_mutex_unlock(&philo->table->lock_meal);
+	}
 	pthread_mutex_lock(&philo->table->lock_write);
 	if (check_flag(philo) != -1)
 		printf("%ld %d is thinking\n", time_since_beg(philo), philo->id + 1);
 	pthread_mutex_unlock(&philo->table->lock_write);
+	if (duration(philo, time_to_think, 1) == -1)
+		return (-1);
 	return (0);
 }
 
@@ -69,7 +83,6 @@ int	spoon_eat_routine(void *info)
 	philo = info;
 	if (check_flag(philo) == -1)
 		return (-1);
-
 	pthread_mutex_lock(&philo->table->locks_spoon[philo->spoon[0]]);
 	pthread_mutex_lock(&philo->table->lock_write);
 	if (check_flag(philo) != -1)
@@ -138,6 +151,11 @@ void	*routine(void  *philo)
 		routine_alone(philo);
 	else
 	{	
+		if (((t_philo *)philo)->id % 2 != 0)
+		{
+			if (duration(philo, ((t_philo *)philo)->table->d_eat, 1) == - 1)
+				return (NULL);
+		}
 		while (check_flag(philo) != -1)
 		{
 			if (spoon_eat_routine(philo) == -1)//si nb de repas atteint

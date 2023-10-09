@@ -6,7 +6,7 @@
 /*   By: mapoirie <mapoirie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 18:01:08 by mapoirie          #+#    #+#             */
-/*   Updated: 2023/10/06 14:37:20 by mapoirie         ###   ########.fr       */
+/*   Updated: 2023/10/09 10:37:05 by mapoirie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,6 +148,7 @@ t_program	*init_table(int ac, char **av)
 		return (NULL);
 	return (table);
 }
+
 void	philo(int ac, char **av)
 {
 	t_program *table;
