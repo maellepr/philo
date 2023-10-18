@@ -6,7 +6,7 @@
 /*   By: mapoirie <mapoirie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/13 09:54:26 by mapoirie          #+#    #+#             */
-/*   Updated: 2023/10/16 17:56:26 by mapoirie         ###   ########.fr       */
+/*   Updated: 2023/10/18 16:54:38 by mapoirie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,9 @@
 # include <sys/stat.h>
 # include <fcntl.h>
 # include <semaphore.h>
+# include <signal.h>
+# include <errno.h>
+# include <sys/wait.h>
 
 // typedef struct s_philo	t_philo;
 
@@ -32,15 +35,23 @@ typedef struct s_program
 	long int		d_eat;
 	long int		d_sleep;
 	long int		nb_eat;
-	long int		t_start;
-	int				flag_stop;
-	int				flag_eat;
-	sem_t			*sem_write;// init a 1 pour print 
-	sem_t			*sem_meal;// init a 1
-	sem_t			*sem_spoon;// init au nb de philo
-	sem_t			*sem_nb_eat;// init a 1
 
+	long int		t_start;
+	long int		t_beg_meal;
+
+	int				flag_stop;
+	// int				flag_eat;
+	
+	sem_t			*sem_write;
+	sem_t			*sem_spoon;// init au nb de philo sert a bloquer nb de fork
+	sem_t			*sem_nb_eat;// init a 0, sert a count nb de repas atteint par philo
+	sem_t			*sem_dead;// sert a tuer tout le monde lorsqu un philo dead
+	sem_t			*sem_flag;// sert a proteger variable flag_stop
+	
 	pid_t			*pid;
+
+	pthread_t		thread_dead;
+	pthread_t		thread_meal;
 	// pthread_mutex_t	lock_write;
 	// pthread_mutex_t	lock_flag;
 	// pthread_mutex_t	lock_meal;
@@ -72,16 +83,24 @@ int			check_param(char **av);
 /*---------------------- time.c ----------------------*/
 long int	get_ms_time(void);
 long int	time_since_beg(t_program *table);
-void		duration(t_program *table, long int time);
+int			duration(long int time, t_program *table, int i);
+int			check_conditions(t_program *table, int i);
 
 /*---------------------- process.c ----------------------*/
-int			make_process(t_program *table);
+int			open_sem(t_program *table);
 void		child_process(t_program *table, int i);
+int			make_process(t_program *table);
+
 
 /*---------------------- routine.c ----------------------*/
-void	eat_routine(t_program *table, int i);
-void	sleep_routine(t_program *table, int i);
-void	spoon_eat_routine(t_program *table, int i);
+int			think_routine(t_program *table, int i);
+int			sleep_routine(t_program *table, int i);
+int			spoon_eat_routine(t_program *table, int i, int count);
+
+/*---------------------- thread.c ----------------------*/
+int			check_flag_stop(t_program *philo);
+void		*kill_process(void *info);
+int			create_thread(t_program *table);
 
 /*---------------------- free.c ----------------------*/
 void		free_all(t_program *table);

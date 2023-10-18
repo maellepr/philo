@@ -6,7 +6,7 @@
 /*   By: mapoirie <mapoirie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/13 09:53:34 by mapoirie          #+#    #+#             */
-/*   Updated: 2023/10/16 16:33:05 by mapoirie         ###   ########.fr       */
+/*   Updated: 2023/10/18 16:06:30 by mapoirie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,17 +14,25 @@
 
 int	init_sema(t_program *table)
 {
+	sem_unlink("/sem_write");
+	sem_unlink("/sem_spoon");
+	sem_unlink("/sem_nb_eat");
+	sem_unlink("/sem_dead");
+	sem_unlink("/sem_flag");
 	table->sem_write = sem_open("/lock_write", O_CREAT, S_IRUSR | S_IWUSR, 1);
 	if (table->sem_write == SEM_FAILED)
-		return (write(2, "Error while opening semaphore\n", 30), -1);
-	table->sem_meal = sem_open("/lock_meal", O_CREAT, S_IRUSR | S_IWUSR, 1);
-	if (table->sem_meal == SEM_FAILED)
 		return (write(2, "Error while opening semaphore\n", 30), -1);
 	table->sem_spoon = sem_open("/sem_spoon", O_CREAT, S_IRUSR | S_IWUSR, table->nb_p);
 	if (table->sem_spoon == SEM_FAILED)
 		return (write(2, "Error while opening semaphore\n", 30), -1);
-	table->sem_nb_eat = sem_open("/sem_nb_eat", O_CREAT, S_IRUSR | S_IWUSR, 1);
+	table->sem_nb_eat = sem_open("/sem_nb_eat", O_CREAT, S_IRUSR | S_IWUSR, 0);
 	if (table->sem_nb_eat == SEM_FAILED)
+		return (write(2, "Error while opening semaphore\n", 30), -1);
+	table->sem_dead = sem_open("/sem_dead", O_CREAT, S_IRUSR | S_IWUSR, 0);
+	if (table->sem_dead == SEM_FAILED)
+		return (write(2, "Error while opening semaphore\n", 30), -1);
+	table->sem_flag = sem_open("/sem_flag", O_CREAT, S_IRUSR | S_IWUSR, 1);
+	if (table->sem_flag == SEM_FAILED)
 		return (write(2, "Error while opening semaphore\n", 30), -1);
 	return (0);
 }
@@ -45,6 +53,8 @@ int	init_nb_pre_atoi(t_program *table, int ac, char **av)
 table->d_eat == -1 || table->d_sleep == -1 || table->nb_eat == -1)
 		return (write(2, "Error, arguments has to be between 0 \
 and int_max\n", 49), -1);
+	
+	table->flag_stop = 0;
 	return (0);
 }
 
@@ -60,6 +70,7 @@ t_program	*init_table(int ac, char **av)
 	if (init_nb_pre_atoi(table, ac, av) == -1)
 		return (free(table), NULL);
 	table->t_start = get_ms_time();
+	table->t_beg_meal = get_ms_time();
 	if (init_sema(table) == -1)
 		return (free(table), NULL);
 	table->pid = malloc(sizeof(pid_t) * table->nb_p);

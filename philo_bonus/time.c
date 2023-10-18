@@ -6,7 +6,7 @@
 /*   By: mapoirie <mapoirie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/13 11:10:27 by mapoirie          #+#    #+#             */
-/*   Updated: 2023/10/16 17:55:33 by mapoirie         ###   ########.fr       */
+/*   Updated: 2023/10/18 10:53:46 by mapoirie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,12 +31,30 @@ long int	time_since_beg(t_program *table)
 	return (result);
 }
 
-void	duration(t_program *table, long int time)
+int	duration(long int time, t_program *table, int i)
 {
 	long int	time_end;
 
 	time_end = get_ms_time() + time;
 	while (get_ms_time() < time_end)
-		usleep(10000);//peut-etre a changer
-	return ;
+	{
+		if (check_conditions(table, i) == - 1)
+			return (-1);
+		usleep(1000);//peut-etre a changer
+	}
+	return (0);
+}
+
+int	check_conditions(t_program *table, int i)
+{
+		if ((get_ms_time() - table->t_beg_meal) >= table->d_die || table->d_die == 0)
+		{
+			printf("%ld %d died\n", time_since_beg(table), i + 1);
+			sem_post(table->sem_dead);
+			// printf("---->%d\n", sem_wait(table->sem_dead));
+			usleep(1000);
+			// sem_wait(table->sem_dead);
+			return (-1);
+		}
+	return (0);
 }
